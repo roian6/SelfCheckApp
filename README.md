@@ -11,5 +11,5 @@
 - 만약 의심 증상이 발견된다면, 앱을 사용하지 말고 반드시 수동으로 자가진단을 진행해야 합니다.
 
 ## 스크린샷
-<img src="https://github.com/roian6/FileDrive/blob/master/%EB%A7%81%ED%81%AC%EC%9A%A9%20%EC%9D%B4%EB%AF%B8%EC%A7%80/selfcheck_image1.jpg" alt="logo" width="540" height="960">
-<img src="https://github.com/roian6/FileDrive/blob/master/%EB%A7%81%ED%81%AC%EC%9A%A9%20%EC%9D%B4%EB%AF%B8%EC%A7%80/selfcheck_image2.jpg" alt="logo" width="540" height="960">
+<img src="https://github.com/roian6/FileDrive/blob/master/%EB%A7%81%ED%81%AC%EC%9A%A9%20%EC%9D%B4%EB%AF%B8%EC%A7%80/selfcheck_image1.jpg" alt="logo" >
+<img src="https://github.com/roian6/FileDrive/blob/master/%EB%A7%81%ED%81%AC%EC%9A%A9%20%EC%9D%B4%EB%AF%B8%EC%A7%80/selfcheck_image2.jpg" alt="logo" >
