@@ -1,6 +1,7 @@
 package com.david0926.selfcheck;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,12 +12,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.david0926.selfcheck.databinding.ActivityMainBinding;
+import com.david0926.selfcheck.model.SettingModel;
 import com.david0926.selfcheck.util.SharedPreferenceUtil;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     private ActivityMainBinding binding;
 
@@ -24,13 +30,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setIsLoading(true);
         binding.setLink("");
         binding.setIsLinkValid(false);
 
-        if (!SharedPreferenceUtil.getString(this, "user_key", "").equals("")) {
-            startActivity(new Intent(MainActivity.this, CheckActivity.class));
-            finish();
-        }
+        firebaseFirestore
+                .collection("setting")
+                .document("setting")
+                .get()
+                .addOnCompleteListener(runnable -> {
+
+                    DocumentSnapshot documentSnapshot = runnable.getResult();
+                    if (documentSnapshot == null) return;
+
+                    SettingModel model = documentSnapshot.toObject(SettingModel.class);
+                    if (model == null) return;
+
+                    if (model.getNotice()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle(model.getTitle()).setMessage(model.getMessage());
+                        builder.setPositiveButton("확인", (dialogInterface, i) -> {
+                            if (!model.getEnable()) finish();
+                            else checkVersion(model);
+                        });
+                        builder.setOnCancelListener(dialogInterface -> checkVersion(model));
+                        builder.setCancelable(model.getCancelable()&&model.getEnable());
+                        builder.show();
+                    } else checkVersion(model);
+
+                });
 
         binding.edtMainLink.addTextChangedListener(new TextWatcher() {
             @Override
@@ -68,5 +96,37 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
+
+        binding.txtMainNoLink.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("바로참여 링크가 없다면?").setMessage("현재 인증번호나 학생정보로 자가진단을 진행하는 기능을 개발하고 있습니다. \n그 전까지는 바로참여 링크를 학교에 문의하거나, 업데이트를 기다려 주세요!");
+            builder.setPositiveButton("알겠습니다!", (dialogInterface, i) -> {
+            });
+            builder.show();
+        });
+    }
+
+    private void startCheck() {
+        if (!SharedPreferenceUtil.getString(this, "user_key", "").equals("")) {
+            startActivity(new Intent(MainActivity.this, CheckActivity.class));
+            finish();
+        } else binding.setIsLoading(false);
+    }
+
+    private void checkVersion(SettingModel model) {
+        if (!model.getVersion().equals(BuildConfig.VERSION_NAME)) {
+            doUpdate(model.getLink());
+        } else startCheck();
+    }
+
+    private void doUpdate(String link) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("업데이트 필요").setMessage("새로운 버전이 출시되었습니다! 업데이트를 진행해 주세요.");
+        builder.setPositiveButton("업데이트", (dialogInterface, i) -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
+            finish();
+        });
+        builder.setCancelable(false);
+        builder.show();
     }
 }

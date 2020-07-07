@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="isLoading"
+            type="Boolean" />
+
+        <variable
             name="link"
             type="String" />
 
@@ -26,12 +30,22 @@
             android:background="@android:color/white"
             tools:context=".MainActivity">
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{isLoading, default=gone}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout1"
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="32dp"
+                android:visibility="@{!isLoading, default=visible}"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout1"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -71,6 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="24dp"
                 android:padding="32dp"
+                android:visibility="@{!isLoading, default=visible}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
@@ -80,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
                     android:gravity="center"
-                    android:text="위 내용을 모두 숙지하였다면, 본인의 자가진단 링크를 복사하여 아래에 붙여넣어 주세요."
+                    android:text="위 내용을 모두 숙지하였다면, 본인의 자가진단 바로참여 링크를 복사하여 아래에 붙여넣어 주세요."
                     android:textColor="@color/materialGray6"
                     android:textSize="16sp"
                     app:layout_constrainedWidth="true"
@@ -96,7 +111,7 @@
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/materialGray1"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
-                    android:hint="자가진단 링크"
+                    android:hint="자가진단 바로참여 링크"
                     android:padding="16dp"
                     android:text="@={link}"
                     android:textColorHint="@color/materialGray5"
@@ -116,14 +131,26 @@
                     android:text="설정 완료하기"
                     android:textColor="@android:color/white"
                     app:buttonEnabled="@{isLinkValid}"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/edt_main_link" />
 
+                <TextView
+                    android:id="@+id/txt_main_no_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/apple_sd_gothic_neo_r"
+                    android:gravity="center"
+                    android:text="바로참여 링크가 없나요?"
+                    android:textColor="@color/materialGray5"
+                    android:textSize="14sp"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_main" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

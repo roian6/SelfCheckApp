@@ -82,9 +82,7 @@ public class CheckActivity extends AppCompatActivity {
                         binding.setIsSuccess(true);
                         postResult(resultSVO.getString("schulNm"), resultSVO.getString("stdntName"));
                     } else {
-                        Log.d("debug", "onResponse: "+
-                                SharedPreferenceUtil.getString(CheckActivity.this, "user_key", "")
-                        +" / "+result);
+                        binding.setErrorCode(result);
                         binding.setIsFailed(true);
                     }
 

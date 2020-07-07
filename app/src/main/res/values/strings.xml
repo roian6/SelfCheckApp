@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">1초 자가진단</string>
-    <string name="main_desc">이 앱은 코로나19 의심 증상이 없는 학생들의 자가진단 시간 단축을 위해 만들어졌습니다.\n
+    <string name="main_desc">이 앱은 의심 증상이 없는 학생들의 자가진단 시간 단축을 위해 만들어졌습니다.\n
         \n
         만약 의심 증상이 발견된다면, 앱을 사용하지 말고 반드시 수동으로 자가진단을 진행해야 합니다.</string>
 
     <string name="text_loading">자가진단 진행중…</string>
-    <string name="text_failed">자가진단에 실패했습니다. 본인의 자가진단 링크가 정확한지 확인해 주세요.\n
+    <string name="text_failed">자가진단에 실패했습니다. 자가진단 바로참여 링크가 정확한지 확인하고, 문제가 있다면 우측 상단의 버튼을 눌러 링크를 초기화해 주세요.\n
     \n
     문제가 지속된다면, 서버 불량이거나 자가진단 항목이 변경되었을 수 있습니다.\n
-    android-dev@kakao.com으로 연락 주세요.</string>
+    android-dev@kakao.com 으로 연락 주세요.</string>
 
     <string name="base_person_link">https://eduro.sen.go.kr/stv_cvd_co00_000.do?k=</string>
     <string name="base_url">https://eduro.sen.go.kr</string>
