@@ -1,7 +1,7 @@
 # 자가진단, 앱으로 1초만에 해결하세요!
 <img src="https://github.com/roian6/FileDrive/blob/master/%EB%A7%81%ED%81%AC%EC%9A%A9%20%EC%9D%B4%EB%AF%B8%EC%A7%80/selfcheck_logo.png" alt="logo" width="200" height="200">
 
-- [1초 자가진단.apk](https://github.com/roian6/SelfCheckApp/releases/download/0.0.2/1.0.2.apk)
+- [1초 자가진단.apk](https://github.com/roian6/SelfCheckApp/releases/download/0.0.2/SelfCheck_0.2.apk)
 - 매일 아침 비몽사몽한 채로 자가진단을 하느라 힘들었다면, "1초 자가진단" 앱을 사용해 보세요! 
 - 실행하기만 하면 앱이 자동으로 자가진단을 완료하고, 결과 화면을 보여줍니다.
 
