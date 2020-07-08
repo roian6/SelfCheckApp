@@ -10,12 +10,16 @@
             type="Boolean" />
 
         <variable
-            name="link"
+            name="school"
             type="String" />
 
         <variable
-            name="isLinkValid"
-            type="Boolean" />
+            name="name"
+            type="String" />
+
+        <variable
+            name="birth"
+            type="String" />
 
     </data>
 
@@ -43,7 +47,7 @@
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="32dp"
+                android:paddingHorizontal="32dp"
                 android:visibility="@{!isLoading, default=visible}"
                 app:layout_constraintBottom_toTopOf="@+id/constraintLayout1"
                 app:layout_constraintTop_toTopOf="parent">
@@ -84,9 +88,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="24dp"
-                android:padding="32dp"
+                android:paddingHorizontal="32dp"
                 android:visibility="@{!isLoading, default=visible}"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
                 <TextView
@@ -95,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
                     android:gravity="center"
-                    android:text="위 내용을 모두 숙지하였다면, 본인의 자가진단 바로참여 링크를 복사하여 아래에 붙여넣어 주세요."
+                    android:text="위 내용을 모두 숙지하였다면, 자가진단에 필요한 학생 정보를 입력해 주세요."
                     android:textColor="@color/materialGray6"
                     android:textSize="16sp"
                     app:layout_constrainedWidth="true"
@@ -104,51 +110,73 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/edt_main_link"
+                    android:id="@+id/edt_main_school"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/materialGray1"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
-                    android:hint="자가진단 바로참여 링크"
-                    android:padding="16dp"
-                    android:text="@={link}"
+                    android:hint="학교 이름 (정확하게 입력)"
+                    android:padding="14dp"
+                    android:text="@={school}"
                     android:textColorHint="@color/materialGray5"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
+                <EditText
+                    android:id="@+id/edt_main_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/round_box"
+                    android:backgroundTint="@color/materialGray1"
+                    android:fontFamily="@font/apple_sd_gothic_neo_r"
+                    android:hint="학생 이름"
+                    android:padding="14dp"
+                    android:text="@={name}"
+                    android:textColorHint="@color/materialGray5"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edt_main_school" />
+
+                <EditText
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:id="@+id/edt_main_birth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/round_box"
+                    android:backgroundTint="@color/materialGray1"
+                    android:fontFamily="@font/apple_sd_gothic_neo_r"
+                    android:hint="생년월일 6자리"
+                    android:padding="14dp"
+                    android:text="@={birth}"
+                    android:textColorHint="@color/materialGray5"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edt_main_name" />
+
                 <Button
                     android:id="@+id/btn_main"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginVertical="16dp"
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/colorPrimary"
                     android:fontFamily="@font/apple_sd_gothic_neo_h"
                     android:text="설정 완료하기"
                     android:textColor="@android:color/white"
-                    app:buttonEnabled="@{isLinkValid}"
+                    app:buttonEnabled="@{!school.equals(``)&amp;&amp;!name.equals(``)&amp;&amp;!birth.equals(``)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edt_main_link" />
-
-                <TextView
-                    android:id="@+id/txt_main_no_link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/apple_sd_gothic_neo_r"
-                    android:gravity="center"
-                    android:text="바로참여 링크가 없나요?"
-                    android:textColor="@color/materialGray5"
-                    android:textSize="14sp"
-                    app:layout_constrainedWidth="true"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_main" />
+                    app:layout_constraintTop_toBottomOf="@+id/edt_main_birth" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

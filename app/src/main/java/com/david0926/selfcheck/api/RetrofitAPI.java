@@ -8,6 +8,12 @@ import retrofit2.http.POST;
 
 public interface RetrofitAPI {
 
+    @POST("/stv_cvd_co00_004.do")
+    Call<ResponseBody> postSchool(@Body RequestBody body);
+
+    @POST("/stv_cvd_co00_012.do")
+    Call<ResponseBody> postInfo(@Body RequestBody body);
+
     @POST("/stv_cvd_co01_000.do")
     Call<ResponseBody> postCheck(@Body RequestBody body);
 

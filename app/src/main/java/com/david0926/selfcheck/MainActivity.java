@@ -3,26 +3,38 @@ package com.david0926.selfcheck;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import com.david0926.selfcheck.api.RetrofitAPI;
 import com.david0926.selfcheck.databinding.ActivityMainBinding;
 import com.david0926.selfcheck.model.SettingModel;
 import com.david0926.selfcheck.util.SharedPreferenceUtil;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private Retrofit mRetrofit;
+    private RetrofitAPI mRetrofitAPI;
 
     private ActivityMainBinding binding;
 
@@ -31,8 +43,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setIsLoading(true);
-        binding.setLink("");
-        binding.setIsLinkValid(false);
+        binding.setSchool("");
+        binding.setName("");
+        binding.setBirth("");
+
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
 
         firebaseFirestore
                 .collection("setting")
@@ -54,55 +73,91 @@ public class MainActivity extends AppCompatActivity {
                             else checkVersion(model);
                         });
                         builder.setOnCancelListener(dialogInterface -> checkVersion(model));
-                        builder.setCancelable(model.getCancelable()&&model.getEnable());
+                        builder.setCancelable(model.getCancelable() && model.getEnable());
                         builder.show();
                     } else checkVersion(model);
 
                 });
 
-        binding.edtMainLink.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        binding.btnMain.setOnClickListener(view -> checkSchool());
 
+    }
+
+    private void checkSchool() {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("schulNm", binding.getSchool())
+                .build();
+
+        Call<ResponseBody> mCallSchool = mRetrofitAPI.postSchool(requestBody);
+        mCallSchool.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    JSONObject object = new JSONObject(response.body().string());
+                    JSONObject resultSVO = object.getJSONObject("resultSVO");
+                    String result = resultSVO.getString("rtnRsltCode");
+
+                    if (result.equals("SUCCESS")) {
+                        getUserKey(resultSVO.getString("schulCode"), binding.getName(), binding.getBirth());
+                    } else {
+                        Toast.makeText(MainActivity.this, "학교 이름이 정확하지 않거나 2건 이상입니다.", Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "학교 이름을 검색하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().contains(getString(R.string.base_person_link))) {
-                    binding.setIsLinkValid(true);
-                } else binding.setIsLinkValid(false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(MainActivity.this, "학교 이름을 검색하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        binding.btnMain.setOnClickListener(view -> {
-            try {
-                String key = URLDecoder.decode(binding.getLink(), "UTF-8").replace(getString(R.string.base_person_link), "");
-                SharedPreferenceUtil.putString(this, "user_key", key);
+    private void getUserKey(String code, String name, String birth) {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("schulCode", code)
+                .addFormDataPart("pName", name)
+                .addFormDataPart("frnoRidno", birth)
+                .build();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("설정 완료").setMessage("다음에 앱을 시작하면 자동으로 자가진단이 시작됩니다.");
-                builder.setPositiveButton("확인", (dialogInterface, i) -> finish());
-                builder.setCancelable(false).show();
+        Call<ResponseBody> mCallInfo = mRetrofitAPI.postInfo(requestBody);
+        mCallInfo.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    JSONObject object = new JSONObject(response.body().string());
+                    JSONObject resultSVO = object.getJSONObject("resultSVO");
+                    String result = resultSVO.getString("rtnRsltCode");
 
-            } catch (UnsupportedEncodingException e) {
-                Toast.makeText(this, "올바른 주소가 아닙니다.", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+                    if (result.equals("SUCCESS")) {
+                        String key = URLDecoder.decode(resultSVO.getString("qstnCrtfcNoEncpt"), "UTF-8");
+                        SharedPreferenceUtil.putString(MainActivity.this, "user_key", key);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("설정 완료").setMessage("다음에 앱을 시작하면 자동으로 자가진단이 시작됩니다.");
+                        builder.setPositiveButton("확인", (dialogInterface, i) -> finish());
+                        builder.setCancelable(false).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "학생 정보가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "학생 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
 
-
-        });
-
-        binding.txtMainNoLink.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("바로참여 링크가 없다면?").setMessage("현재 인증번호나 학생정보로 자가진단을 진행하는 기능을 개발하고 있습니다. \n그 전까지는 바로참여 링크를 학교에 문의하거나, 업데이트를 기다려 주세요!");
-            builder.setPositiveButton("알겠습니다!", (dialogInterface, i) -> {
-            });
-            builder.show();
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(MainActivity.this, "학생 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
