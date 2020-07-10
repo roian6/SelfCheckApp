@@ -1,8 +1,9 @@
 package com.david0926.selfcheck.util;
 
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-
+import android.widget.Spinner;
 
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
@@ -22,6 +23,12 @@ public class BindingOptions {
         button.setEnabled(enabled);
         button.setBackgroundTintList(ContextCompat.getColorStateList(button.getContext(),
                 enabled ? R.color.colorPrimary : R.color.materialGray5));
+    }
+
+    @BindingAdapter("spinnerItem")
+    public static void bindSpinnerItem(Spinner spinner, String[] items) {
+        if (items == null) return;
+        spinner.setAdapter(new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, items));
     }
 
 }

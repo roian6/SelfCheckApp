@@ -18,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import okhttp3.MultipartBody;
@@ -46,12 +45,7 @@ public class MainActivity extends AppCompatActivity {
         binding.setSchool("");
         binding.setName("");
         binding.setBirth("");
-
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.base_url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
+        binding.setCityList(getResources().getStringArray(R.array.city));
 
         firebaseFirestore
                 .collection("setting")
@@ -84,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkSchool() {
+
+        String base_url = getResources().getStringArray(R.array.city_link)[binding.spinnerMain.getSelectedItemPosition()];
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(base_url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
+
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("schulNm", binding.getSchool())
@@ -99,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
                     String result = resultSVO.getString("rtnRsltCode");
 
                     if (result.equals("SUCCESS")) {
-                        getUserKey(resultSVO.getString("schulCode"), binding.getName(), binding.getBirth());
+                        getUserKey(resultSVO.getString("schulCode"), binding.getName(), binding.getBirth(), base_url);
                     } else {
-                        Toast.makeText(MainActivity.this, "학교 이름이 정확하지 않거나 2건 이상입니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "학교 이름/지역이 정확하지 않거나 2건 이상입니다.", Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (Exception e) {
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getUserKey(String code, String name, String birth) {
+    private void getUserKey(String code, String name, String birth, String url) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("schulCode", code)
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     if (result.equals("SUCCESS")) {
                         String key = URLDecoder.decode(resultSVO.getString("qstnCrtfcNoEncpt"), "UTF-8");
                         SharedPreferenceUtil.putString(MainActivity.this, "user_key", key);
+                        SharedPreferenceUtil.putString(MainActivity.this, "base_url", url);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                         builder.setTitle("설정 완료").setMessage("다음에 앱을 시작하면 자동으로 자가진단이 시작됩니다.");
@@ -162,14 +165,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startCheck() {
-        if (!SharedPreferenceUtil.getString(this, "user_key", "").equals("")) {
+        if (!SharedPreferenceUtil.getString(this, "user_key", "").equals("")
+                && !SharedPreferenceUtil.getString(this, "base_url", "").equals("")) {
             startActivity(new Intent(MainActivity.this, CheckActivity.class));
             finish();
         } else binding.setIsLoading(false);
     }
 
     private void checkVersion(SettingModel model) {
-        if (!model.getVersion().equals(BuildConfig.VERSION_NAME)) {
+        if (!model.getVersion().equals(BuildConfig.VERSION_NAME) && model.getUpdate()) {
             doUpdate(model.getLink());
         } else startCheck();
     }

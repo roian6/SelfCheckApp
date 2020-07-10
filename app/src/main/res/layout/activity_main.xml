@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="java.util.List" />
+
         <variable
             name="isLoading"
             type="Boolean" />
@@ -20,6 +22,10 @@
         <variable
             name="birth"
             type="String" />
+
+        <variable
+            name="cityList"
+            type="String[]" />
 
     </data>
 
@@ -109,11 +115,24 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/edt_main_school"
-                    android:layout_width="match_parent"
+                <Spinner
+                    android:spinnerMode="dialog"
+                    android:id="@+id/spinner_main"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:theme="@style/SpinnerTheme"
+                    app:layout_constraintBottom_toBottomOf="@+id/edt_main_school"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/edt_main_school"
+                    app:spinnerItem="@{cityList}" />
+
+                <EditText
+                    app:layout_constrainedWidth="true"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/edt_main_school"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/materialGray1"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
@@ -122,7 +141,7 @@
                     android:text="@={school}"
                     android:textColorHint="@color/materialGray5"
                     android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/spinner_main"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -144,8 +163,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/edt_main_school" />
 
                 <EditText
-                    android:inputType="number"
-                    android:maxLength="6"
                     android:id="@+id/edt_main_birth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -154,6 +171,8 @@
                     android:backgroundTint="@color/materialGray1"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
                     android:hint="생년월일 6자리"
+                    android:inputType="number"
+                    android:maxLength="6"
                     android:padding="14dp"
                     android:text="@={birth}"
                     android:textColorHint="@color/materialGray5"

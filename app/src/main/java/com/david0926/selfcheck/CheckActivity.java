@@ -2,7 +2,6 @@ package com.david0926.selfcheck;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -32,6 +31,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CheckActivity extends AppCompatActivity {
 
+    private String base_url;
+
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
 
@@ -47,8 +48,10 @@ public class CheckActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbarCheck);
         getSupportActionBar().setTitle("");
 
+        base_url = SharedPreferenceUtil.getString(this, "base_url", "");
+
         mRetrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.base_url))
+                .baseUrl(base_url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
@@ -105,7 +108,7 @@ public class CheckActivity extends AppCompatActivity {
             String post = "rspns01=1&rspns02=1&rspns07=0&rspns08=0&rspns09=0"
                     + "&schulNm=" + URLEncoder.encode(school, "UTF-8")
                     + "&stdntName=" + URLEncoder.encode(name, "UTF-8");
-            binding.webCheck.postUrl(getString(R.string.base_url) + "/stv_cvd_co02_000.do", post.getBytes());
+            binding.webCheck.postUrl(base_url + "/stv_cvd_co02_000.do", post.getBytes());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -124,6 +127,7 @@ public class CheckActivity extends AppCompatActivity {
             builder.setTitle("앱 초기화").setMessage("앱에 등록된 모든 정보를 초기화할까요?");
             builder.setPositiveButton("초기화", (dialogInterface, i) -> {
                 SharedPreferenceUtil.putString(this, "user_key", "");
+                SharedPreferenceUtil.putString(this, "base_url", "");
                 Toast.makeText(this, "정상적으로 초기화 되었습니다.", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(CheckActivity.this, MainActivity.class));
                 finish();

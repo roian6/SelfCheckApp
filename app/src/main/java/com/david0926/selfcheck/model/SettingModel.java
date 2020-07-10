@@ -3,11 +3,12 @@ package com.david0926.selfcheck.model;
 public class SettingModel {
 
     private String title, message, version, link;
-    private Boolean enable, notice, cancelable;
+    private Boolean enable, notice, cancelable, update;
 
-    public SettingModel(){}
+    public SettingModel() {
+    }
 
-    public SettingModel(String title, String message, String version, String link, Boolean enable, Boolean notice, Boolean cancelable) {
+    public SettingModel(String title, String message, String version, String link, Boolean enable, Boolean notice, Boolean cancelable, Boolean update) {
         this.title = title;
         this.message = message;
         this.version = version;
@@ -15,6 +16,7 @@ public class SettingModel {
         this.enable = enable;
         this.notice = notice;
         this.cancelable = cancelable;
+        this.update = update;
     }
 
     public String getTitle() {
@@ -71,5 +73,13 @@ public class SettingModel {
 
     public void setCancelable(Boolean cancelable) {
         this.cancelable = cancelable;
+    }
+
+    public Boolean getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(Boolean update) {
+        this.update = update;
     }
 }

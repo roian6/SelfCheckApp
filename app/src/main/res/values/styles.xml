@@ -10,4 +10,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SpinnerTheme">
+        <item name="android:fontFamily">@font/apple_sd_gothic_neo_h</item>
+        <item name="android:textColor">@color/materialGray7</item>
+    </style>
+
 </resources>
