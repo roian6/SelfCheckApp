@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
 
+    private SettingModel model;
+
     private ActivityMainBinding binding;
 
     @Override
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     DocumentSnapshot documentSnapshot = runnable.getResult();
                     if (documentSnapshot == null) return;
 
-                    SettingModel model = documentSnapshot.toObject(SettingModel.class);
+                    model = documentSnapshot.toObject(SettingModel.class);
                     if (model == null) return;
 
                     if (model.getNotice()) {
@@ -138,8 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     String result = resultSVO.getString("rtnRsltCode");
 
                     if (result.equals("SUCCESS")) {
-                        String key = URLDecoder.decode(resultSVO.getString("qstnCrtfcNoEncpt"), "UTF-8")
-                                .replace(" ", "+");
+                        String key = resultSVO.getString("qstnCrtfcNoEncpt");
                         SharedPreferenceUtil.putString(MainActivity.this, "user_key", key);
                         SharedPreferenceUtil.putString(MainActivity.this, "base_url", url);
 
@@ -168,7 +169,9 @@ public class MainActivity extends AppCompatActivity {
     private void startCheck() {
         if (!SharedPreferenceUtil.getString(this, "user_key", "").equals("")
                 && !SharedPreferenceUtil.getString(this, "base_url", "").equals("")) {
-            startActivity(new Intent(MainActivity.this, CheckActivity.class));
+            Intent intent = new Intent(MainActivity.this, CheckActivity.class);
+            intent.putExtra("setting_model", model);
+            startActivity(intent);
             finish();
         } else binding.setIsLoading(false);
     }

@@ -14,12 +14,15 @@ import androidx.databinding.DataBindingUtil;
 
 import com.david0926.selfcheck.api.RetrofitAPI;
 import com.david0926.selfcheck.databinding.ActivityCheckBinding;
+import com.david0926.selfcheck.model.SettingModel;
 import com.david0926.selfcheck.util.SharedPreferenceUtil;
 
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.Locale;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -33,6 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CheckActivity extends AppCompatActivity {
 
     private String base_url;
+    private SettingModel settingModel;
 
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
@@ -50,6 +54,7 @@ public class CheckActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
 
         base_url = SharedPreferenceUtil.getString(this, "base_url", "");
+        settingModel = (SettingModel) getIntent().getSerializableExtra("setting_model");
 
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(base_url)
@@ -62,16 +67,18 @@ public class CheckActivity extends AppCompatActivity {
 
     private void postCheck() {
 
-        RequestBody requestBody = new MultipartBody.Builder()
+        MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("qstnCrtfcNoEncpt", SharedPreferenceUtil.getString(this, "user_key", ""))
-                .addFormDataPart("rspns01", "1")
-                .addFormDataPart("rspns02", "1")
-                .addFormDataPart("rspns07", "0")
-                .addFormDataPart("rspns08", "0")
-                .addFormDataPart("rspns09", "0")
                 .addFormDataPart("rtnRsltCode", "SUCCESS")
-                .build();
+                .addFormDataPart("qstnCrtfcNoEncpt",
+                        SharedPreferenceUtil.getString(this, "user_key", ""));
+
+        List<String> rspns = settingModel.getRspns();
+        for (int i = 0; i < rspns.size(); i++) {
+            builder.addFormDataPart("rspns" + String.format(Locale.getDefault(), "%02d", i + 1), rspns.get(i));
+        }
+
+        RequestBody requestBody = builder.build();
 
         Call<ResponseBody> mCallCheck = mRetrofitAPI.postCheck(requestBody);
         mCallCheck.enqueue(new Callback<ResponseBody>() {
@@ -106,9 +113,15 @@ public class CheckActivity extends AppCompatActivity {
 
     private void postResult(String school, String name) {
         try {
-            String post = "rspns01=1&rspns02=1&rspns07=0&rspns08=0&rspns09=0"
-                    + "&schulNm=" + URLEncoder.encode(school, "UTF-8")
+            String post = "schulNm=" + URLEncoder.encode(school, "UTF-8")
                     + "&stdntName=" + URLEncoder.encode(name, "UTF-8");
+
+            List<String> rspns = settingModel.getRspns();
+            for (int i = 0; i < rspns.size(); i++) {
+                post = post.concat("&rspns" + String.format(Locale.getDefault(), "%02d", i + 1) + "=" + rspns.get(i));
+            }
+
+            Log.d("debug", "postResult: " + post);
             binding.webCheck.postUrl(base_url + "/stv_cvd_co02_000.do", post.getBytes());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

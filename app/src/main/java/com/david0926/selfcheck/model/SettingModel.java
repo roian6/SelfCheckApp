@@ -1,18 +1,23 @@
 package com.david0926.selfcheck.model;
 
-public class SettingModel {
+import java.io.Serializable;
+import java.util.List;
+
+public class SettingModel implements Serializable {
 
     private String title, message, version, link;
+    private List<String> rspns;
     private Boolean enable, notice, cancelable, update;
 
     public SettingModel() {
     }
 
-    public SettingModel(String title, String message, String version, String link, Boolean enable, Boolean notice, Boolean cancelable, Boolean update) {
+    public SettingModel(String title, String message, String version, String link, List<String> rspns, Boolean enable, Boolean notice, Boolean cancelable, Boolean update) {
         this.title = title;
         this.message = message;
         this.version = version;
         this.link = link;
+        this.rspns = rspns;
         this.enable = enable;
         this.notice = notice;
         this.cancelable = cancelable;
@@ -49,6 +54,14 @@ public class SettingModel {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<String> getRspns() {
+        return rspns;
+    }
+
+    public void setRspns(List<String> rspns) {
+        this.rspns = rspns;
     }
 
     public Boolean getEnable() {
