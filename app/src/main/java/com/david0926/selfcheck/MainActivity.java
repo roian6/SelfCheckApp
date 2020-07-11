@@ -138,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
                     String result = resultSVO.getString("rtnRsltCode");
 
                     if (result.equals("SUCCESS")) {
-                        String key = URLDecoder.decode(resultSVO.getString("qstnCrtfcNoEncpt"), "UTF-8");
+                        String key = URLDecoder.decode(resultSVO.getString("qstnCrtfcNoEncpt"), "UTF-8")
+                                .replace(" ", "+");
                         SharedPreferenceUtil.putString(MainActivity.this, "user_key", key);
                         SharedPreferenceUtil.putString(MainActivity.this, "base_url", url);
 
@@ -173,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkVersion(SettingModel model) {
-        if (!model.getVersion().equals(BuildConfig.VERSION_NAME) && model.getUpdate()) {
+        if (Double.parseDouble(model.getVersion())> Double.parseDouble(BuildConfig.VERSION_NAME)
+                && model.getUpdate()) {
             doUpdate(model.getLink());
         } else startCheck();
     }
