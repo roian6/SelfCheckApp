@@ -18,8 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
-import java.net.URLDecoder;
-
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -105,7 +103,32 @@ public class MainActivity extends AppCompatActivity {
                     if (result.equals("SUCCESS")) {
                         getUserKey(resultSVO.getString("schulCode"), binding.getName(), binding.getBirth(), base_url);
                     } else {
-                        Toast.makeText(MainActivity.this, "학교 이름/지역이 정확하지 않거나 2건 이상입니다.", Toast.LENGTH_SHORT).show();
+                        String key = model.getSchool().get(binding.getSchool());
+                        if (key != null){
+                            getUserKey(key, binding.getName(), binding.getBirth(), base_url);
+                        }
+                        else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle("학교 검색 실패").setMessage("학교 이름/지역이 정확하지 않거나 2건 이상입니다. " +
+                                    "\n(학교 이름이 중복되는 경우, 메일로 남겨 주시면 실시간으로 수정하도록 하겠습니다!)");
+
+                            builder.setPositiveButton("메일 보내기", (dialogInterface, i) -> {
+                                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                                intent
+                                        .setData(Uri.parse("mailto:"))
+                                        .putExtra(Intent.EXTRA_EMAIL, new String[]{"android-dev@kakao.com"})
+                                        .putExtra(Intent.EXTRA_SUBJECT, "1초 자가진단 학교명 중복 문의" +
+                                                "("+binding.getSchool()+")")
+                                        .putExtra(Intent.EXTRA_TEXT, "학교명 중복 문의드립니다!\n\n학교명: " + binding.getSchool()
+                                                + "\n지역: " + binding.spinnerMain.getSelectedItem());
+                                if (intent.resolveActivity(getPackageManager()) != null)
+                                    startActivity(intent);
+                                else
+                                    Toast.makeText(MainActivity.this, "이메일 앱이 없습니다. android-dev@kakao.com으로 남겨주세요.", Toast.LENGTH_LONG).show();
+                            });
+                            builder.setNegativeButton("취소", (dialogInterface, i) -> {
+                            }).show();
+                        }
                     }
 
                 } catch (Exception e) {
@@ -177,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkVersion(SettingModel model) {
-        if (Double.parseDouble(model.getVersion())> Double.parseDouble(BuildConfig.VERSION_NAME)
+        if (Double.parseDouble(model.getVersion()) > Double.parseDouble(BuildConfig.VERSION_NAME)
                 && model.getUpdate()) {
             doUpdate(model.getLink());
         } else startCheck();
@@ -185,7 +208,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void doUpdate(String link) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("업데이트 필요").setMessage("새로운 버전이 출시되었습니다! 업데이트를 진행해 주세요.");
+        builder.setTitle("업데이트 필요").setMessage("새로운 버전이 출시되었습니다! 업데이트를 진행해 주세요." +
+                "\n(업데이트가 보이지 않을 경우, 플레이스토어 캐시를 비워보세요.)");
         builder.setPositiveButton("업데이트", (dialogInterface, i) -> {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
             finish();

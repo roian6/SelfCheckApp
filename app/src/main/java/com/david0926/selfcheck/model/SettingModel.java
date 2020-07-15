@@ -2,17 +2,19 @@ package com.david0926.selfcheck.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class SettingModel implements Serializable {
 
     private String title, message, version, link;
     private List<String> rspns;
     private Boolean enable, notice, cancelable, update;
+    private Map<String, String> school;
 
     public SettingModel() {
     }
 
-    public SettingModel(String title, String message, String version, String link, List<String> rspns, Boolean enable, Boolean notice, Boolean cancelable, Boolean update) {
+    public SettingModel(String title, String message, String version, String link, List<String> rspns, Boolean enable, Boolean notice, Boolean cancelable, Boolean update, Map<String, String> school) {
         this.title = title;
         this.message = message;
         this.version = version;
@@ -22,6 +24,7 @@ public class SettingModel implements Serializable {
         this.notice = notice;
         this.cancelable = cancelable;
         this.update = update;
+        this.school = school;
     }
 
     public String getTitle() {
@@ -94,5 +97,13 @@ public class SettingModel implements Serializable {
 
     public void setUpdate(Boolean update) {
         this.update = update;
+    }
+
+    public Map<String, String> getSchool() {
+        return school;
+    }
+
+    public void setSchool(Map<String, String> school) {
+        this.school = school;
     }
 }
