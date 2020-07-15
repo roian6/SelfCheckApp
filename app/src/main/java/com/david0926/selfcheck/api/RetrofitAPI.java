@@ -11,6 +11,9 @@ public interface RetrofitAPI {
     @POST("/stv_cvd_co00_004.do")
     Call<ResponseBody> postSchool(@Body RequestBody body);
 
+    @POST("/stv_cvd_co00_003.do")
+    Call<ResponseBody> postSearch(@Body RequestBody body);
+
     @POST("/stv_cvd_co00_012.do")
     Call<ResponseBody> postInfo(@Body RequestBody body);
 

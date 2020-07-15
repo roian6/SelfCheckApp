@@ -11,6 +11,10 @@ import androidx.databinding.BindingConversion;
 
 import com.david0926.selfcheck.R;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class BindingOptions {
 
     @BindingConversion
@@ -27,6 +31,12 @@ public class BindingOptions {
 
     @BindingAdapter("spinnerItem")
     public static void bindSpinnerItem(Spinner spinner, String[] items) {
+        if (items == null) return;
+        spinner.setAdapter(new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, items));
+    }
+
+    @BindingAdapter("spinnerList")
+    public static void bindSpinnerItem(Spinner spinner, List<String> items) {
         if (items == null) return;
         spinner.setAdapter(new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, items));
     }
