@@ -51,23 +51,22 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
             <Spinner
-                android:spinnerMode="dialog"
-                app:spinnerList="@{items}"
-                android:background="@drawable/round_box"
-                android:backgroundTint="@color/materialGray1"
-                android:layout_marginTop="16dp"
                 android:id="@+id/spinner_dialog_search"
+                style="@style/SpinnerTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:spinnerMode="dialog"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView13" />
+                app:layout_constraintTop_toBottomOf="@id/textView13"
+                app:spinnerList="@{items}" />
 
             <Button
-                android:layout_marginTop="16dp"
                 android:id="@+id/btn_dialog_search_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/round_box"
                 android:backgroundTint="@color/colorPrimary"
                 android:fontFamily="@font/apple_sd_gothic_neo_h"
