@@ -2,9 +2,14 @@ package com.david0926.selfcheck;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,34 +17,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import com.david0926.selfcheck.api.RetrofitAPI;
 import com.david0926.selfcheck.databinding.ActivityCheckBinding;
-import com.david0926.selfcheck.model.SettingModel;
 import com.david0926.selfcheck.util.SharedPreferenceUtil;
 
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Locale;
-
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 public class CheckActivity extends AppCompatActivity {
-
-    private String base_url;
-    private SettingModel settingModel;
-
-    private Retrofit mRetrofit;
-    private RetrofitAPI mRetrofitAPI;
 
     private ActivityCheckBinding binding;
 
@@ -53,79 +34,87 @@ public class CheckActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbarCheck);
         getSupportActionBar().setTitle("");
 
-        base_url = SharedPreferenceUtil.getString(this, "base_url", "");
-        settingModel = (SettingModel) getIntent().getSerializableExtra("setting_model");
+        WebSettings webSettings = binding.webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
 
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(base_url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
-
-        postCheck();
-    }
-
-    private void postCheck() {
-
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("rtnRsltCode", "SUCCESS")
-                .addFormDataPart("qstnCrtfcNoEncpt",
-                        SharedPreferenceUtil.getString(this, "user_key", ""));
-
-        List<String> rspns = settingModel.getRspns();
-        for (int i = 0; i < rspns.size(); i++) {
-            builder.addFormDataPart("rspns" + String.format(Locale.getDefault(), "%02d", i + 1), rspns.get(i));
-        }
-
-        RequestBody requestBody = builder.build();
-
-        Call<ResponseBody> mCallCheck = mRetrofitAPI.postCheck(requestBody);
-        mCallCheck.enqueue(new Callback<ResponseBody>() {
+        binding.webView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    JSONObject object = new JSONObject(response.body().string());
-                    JSONObject resultSVO = object.getJSONObject("resultSVO");
-                    String result = resultSVO.getString("rtnRsltCode");
-
-                    if (result.equals("SUCCESS")) {
+            public void onPageFinished(WebView view, String url) {
+                switch (url) {
+                    case "https://hcs.eduro.go.kr/#/loginHome":
                         binding.setIsSuccess(true);
-                        postResult(resultSVO.getString("schulNm"), resultSVO.getString("stdntName"));
-                    } else {
-                        binding.setErrorCode(result);
-                        binding.setIsFailed(true);
-                    }
-
-                } catch (Exception e) {
-                    binding.setIsFailed(true);
-                    e.printStackTrace();
+                        Toast.makeText(CheckActivity.this,
+                                R.string.first_setup_toast, Toast.LENGTH_SHORT).show();
+                        break;
+                    case "https://hcs.eduro.go.kr/#/relogin":
+                        fillFirstInputByClassName("input_text_common", SharedPreferenceUtil
+                                .getString(CheckActivity.this, "user_code", ""));
+                        clickElementById("btnConfirm");
+                        break;
+                    case "https://hcs.eduro.go.kr/#/main":
+                        if(binding.getIsSuccess()) finishSetup();
+                        else clickFirstElementByClassName("btn");
+                        break;
+                    case "https://hcs.eduro.go.kr/#/survey":
+                        doSurvey();
+                        break;
                 }
             }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-                binding.setIsFailed(true);
-            }
         });
+
+        binding.webView.loadUrl("https://hcs.eduro.go.kr");
     }
 
-    private void postResult(String school, String name) {
-        try {
-            String post = "schulNm=" + URLEncoder.encode(school, "UTF-8")
-                    + "&stdntName=" + URLEncoder.encode(name, "UTF-8");
+    private void finishSetup(){
+        SharedPreferenceUtil.putBoolean(CheckActivity.this, "is_first", false);
+        Toast.makeText(CheckActivity.this,
+                R.string.first_setup_finish_toast, Toast.LENGTH_LONG).show();
+        finish();
+    }
 
-            List<String> rspns = settingModel.getRspns();
-            for (int i = 0; i < rspns.size(); i++) {
-                post = post.concat("&rspns" + String.format(Locale.getDefault(), "%02d", i + 1) + "=" + rspns.get(i));
-            }
+    private void doSurvey() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = 1; i <= 5; i++)
+                clickElementByQuerySelector("[for=\"survey_q" + i + "a1\"]");
+            clickElementById("btnConfirm");
+            binding.setIsSuccess(true);
+        }, 1000);
+    }
 
-            Log.d("debug", "postResult: " + post);
-            binding.webCheck.postUrl(base_url + "/stv_cvd_co02_000.do", post.getBytes());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    private void clickElementByQuerySelector(String selector) {
+        String js = "javascript:(function(){" +
+                "document.querySelector('" + selector + "').click()" +
+                "})()";
+        binding.webView.evaluateJavascript(js, null);
+    }
+
+    private void clickFirstElementByClassName(String cls) {
+        String js = "javascript:(function(){" +
+                "l=document.getElementsByClassName('" + cls + "')[0];" +
+                "e=document.createEvent('HTMLEvents');" +
+                "e.initEvent('click',true,true);" +
+                "l.dispatchEvent(e);" +
+                "})()";
+        binding.webView.evaluateJavascript(js, null);
+    }
+
+    private void fillFirstInputByClassName(String cls, String text) {
+        String js = "javascript:(function(){" +
+                "l=document.getElementsByClassName('" + cls + "')[0];" +
+                "l.value='" + text + "'" +
+                "})()";
+        binding.webView.evaluateJavascript(js, null);
+    }
+
+    private void clickElementById(String id) {
+        String js = "javascript:(function(){" +
+                "l=document.getElementById('" + id + "');" +
+                "e=document.createEvent('HTMLEvents');" +
+                "e.initEvent('click',true,true);" +
+                "l.dispatchEvent(e);" +
+                "})()";
+        binding.webView.evaluateJavascript(js, null);
     }
 
     @Override
@@ -140,8 +129,8 @@ public class CheckActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("앱 초기화").setMessage("앱에 등록된 모든 정보를 초기화할까요?");
             builder.setPositiveButton("초기화", (dialogInterface, i) -> {
-                SharedPreferenceUtil.putString(this, "user_key", "");
-                SharedPreferenceUtil.putString(this, "base_url", "");
+                SharedPreferenceUtil.putString(this, "user_code", "");
+                WebStorage.getInstance().deleteAllData();
                 Toast.makeText(this, "정상적으로 초기화 되었습니다.", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(CheckActivity.this, MainActivity.class));
                 finish();

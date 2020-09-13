@@ -3,15 +3,15 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "com.david0926.selfcheck"
         minSdkVersion 23
-        targetSdkVersion 29
-        versionCode 8
-        versionName "1.7"
+        targetSdkVersion 30
+        versionCode 9
+        versionName "1.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,8 +27,8 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
-    dataBinding {
-        enabled = true
+    buildFeatures{
+        dataBinding true
     }
 
 }

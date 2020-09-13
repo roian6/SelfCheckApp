@@ -12,6 +12,10 @@
             name="isFailed"
             type="Boolean" />
 
+        <variable
+            name="errorCode"
+            type="String" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +40,7 @@
             android:layout_height="match_parent">
 
             <WebView
-                android:id="@+id/web_view"
+                android:id="@+id/web_check"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="@{isSuccess, default=gone}" />
@@ -48,7 +52,7 @@
                 android:layout_marginHorizontal="36dp"
                 android:fontFamily="@font/apple_sd_gothic_neo_r"
                 android:gravity="center"
-                android:text="@{!isFailed?@string/text_loading:@string/text_failed, default=`loading...`}"
+                android:text="@{!isFailed?@string/text_loading:@string/text_failed+`\n\nerrorCode: `+errorCode, default=`loading...`}"
                 android:textColor="@color/materialGray6"
                 android:textSize="16sp"
                 android:visibility="@{!isSuccess, default=visible}"
@@ -70,22 +74,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-            <TextView
-                android:visibility="@{!(isSuccess||isFailed)}"
-                android:textColor="@color/materialGray5"
-                android:fontFamily="@font/apple_sd_gothic_neo_r"
-                android:gravity="center"
-                android:padding="24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tip: 화면이 넘어가지 않는다면, 우측 상단의 버튼을 눌러 앱을 초기화하거나 문의를 남겨주세요!"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>
-

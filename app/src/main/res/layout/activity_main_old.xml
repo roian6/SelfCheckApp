@@ -5,13 +5,27 @@
 
     <data>
 
+        <import type="java.util.List" />
+
         <variable
             name="isLoading"
             type="Boolean" />
 
         <variable
-            name="code"
+            name="school"
             type="String" />
+
+        <variable
+            name="name"
+            type="String" />
+
+        <variable
+            name="birth"
+            type="String" />
+
+        <variable
+            name="cityList"
+            type="String[]" />
 
     </data>
 
@@ -93,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
                     android:gravity="center"
-                    android:text="위 내용을 모두 숙지하였다면, 자가진단에 필요한 4자리 인증코드를 입력해 주세요.\n\n여러 명의 참여자가 추가되어 있는 경우, 목록의 최상단에 있는 참여자만 진단이 진행됩니다."
+                    android:text="위 내용을 모두 숙지하였다면, 자가진단에 필요한 학생 정보를 입력해 주세요."
                     android:textColor="@color/materialGray6"
                     android:textSize="16sp"
                     app:layout_constrainedWidth="true"
@@ -101,25 +115,71 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:textAlignment="center"
-                    android:id="@+id/edt_main_birth"
-                    android:layout_width="match_parent"
+                <Spinner
+                    android:spinnerMode="dialog"
+                    android:id="@+id/spinner_main"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:theme="@style/SpinnerTheme"
+                    app:layout_constraintBottom_toBottomOf="@+id/edt_main_school"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/edt_main_school"
+                    app:spinnerItem="@{cityList}" />
+
+                <EditText
+                    app:layout_constrainedWidth="true"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/edt_main_school"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/materialGray1"
                     android:fontFamily="@font/apple_sd_gothic_neo_r"
-                    android:hint="인증코드 4자리"
-                    android:inputType="numberPassword"
-                    android:maxLength="4"
+                    android:hint="학교 이름 (정확하게 입력)"
                     android:padding="14dp"
-                    android:text="@={code}"
+                    android:text="@={school}"
+                    android:textColorHint="@color/materialGray5"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/spinner_main"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+                <EditText
+                    android:id="@+id/edt_main_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/round_box"
+                    android:backgroundTint="@color/materialGray1"
+                    android:fontFamily="@font/apple_sd_gothic_neo_r"
+                    android:hint="학생 이름"
+                    android:padding="14dp"
+                    android:text="@={name}"
                     android:textColorHint="@color/materialGray5"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                    app:layout_constraintTop_toBottomOf="@+id/edt_main_school" />
+
+                <EditText
+                    android:id="@+id/edt_main_birth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/round_box"
+                    android:backgroundTint="@color/materialGray1"
+                    android:fontFamily="@font/apple_sd_gothic_neo_r"
+                    android:hint="생년월일 6자리"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:padding="14dp"
+                    android:text="@={birth}"
+                    android:textColorHint="@color/materialGray5"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edt_main_name" />
 
                 <Button
                     android:id="@+id/btn_main"
@@ -129,9 +189,9 @@
                     android:background="@drawable/round_box"
                     android:backgroundTint="@color/colorPrimary"
                     android:fontFamily="@font/apple_sd_gothic_neo_h"
-                    android:text="설정 계속하기"
+                    android:text="설정 완료하기"
                     android:textColor="@android:color/white"
-                    app:buttonEnabled="@{code.length()==4}"
+                    app:buttonEnabled="@{!school.equals(``)&amp;&amp;!name.equals(``)&amp;&amp;!birth.equals(``)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
