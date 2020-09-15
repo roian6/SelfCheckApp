@@ -1,6 +1,7 @@
 package com.david0926.selfcheck;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -79,6 +80,10 @@ public class CheckActivity extends AppCompatActivity {
                 clickElementByQuerySelector("[for=\"survey_q" + i + "a1\"]");
             clickElementById("btnConfirm");
             binding.setIsSuccess(true);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("자가진단 확인").setMessage(R.string.selfcheck_questions);
+            builder.setPositiveButton("확인", (dialogInterface, i) -> {});
+            builder.show();
         }, 1000);
     }
 

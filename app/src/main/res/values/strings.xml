@@ -13,5 +13,6 @@
     <string name="base_url">https://hcs.eduro.go.kr</string>
     <string name="first_setup_toast">먼저 자가진단 사이트에서 참여자 정보를 등록해 주세요.</string>
     <string name="first_setup_finish_toast">이제 앱을 다시 실행하면 진단이 진행됩니다!</string>
+    <string name="selfcheck_questions">자가진단을 완료하기 전에, 해당되는 항목이 있는지 확인해 주세요. \n\n- 37.5도 이상의 열이나 발열감\n- 기침, 호흡곤란, 오한, 근육통, 두통, 인후통, 후각/미각 소실\n- 14일 이내 해외여행을 다녀온 사실\n- 동거가족 중 14일 이내 해외여행을 다녀온 사실\n- 동거가족 중 현재 자가격리 중인 가족\n\n해당되는 항목이 하나라도 있다면, 반드시 수동으로 다시 진단을 진행해 주세요.</string>
 
 </resources>
