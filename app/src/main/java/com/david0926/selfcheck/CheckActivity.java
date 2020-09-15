@@ -79,11 +79,13 @@ public class CheckActivity extends AppCompatActivity {
             for (int i = 1; i <= 5; i++)
                 clickElementByQuerySelector("[for=\"survey_q" + i + "a1\"]");
             clickElementById("btnConfirm");
+            if(!binding.getIsSuccess()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("자가진단 확인").setMessage(R.string.selfcheck_questions);
+                builder.setPositiveButton("확인", (dialogInterface, i) -> {});
+                builder.show();
+            }
             binding.setIsSuccess(true);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("자가진단 확인").setMessage(R.string.selfcheck_questions);
-            builder.setPositiveButton("확인", (dialogInterface, i) -> {});
-            builder.show();
         }, 1000);
     }
 
