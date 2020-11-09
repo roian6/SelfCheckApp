@@ -4,14 +4,14 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.david0926.selfcheck"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 11
-        versionName "2.0"
+        versionCode 12
+        versionName "2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

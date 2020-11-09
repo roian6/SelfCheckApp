@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startCheck() {
         if (!SharedPreferenceUtil.getString(this, "user_code", "").equals("")) {
-            startActivity(new Intent(MainActivity.this, CheckActivity.class));
+            Intent intent = new Intent(MainActivity.this, CheckActivity.class);
+            intent.putExtra("setting", model);
+            startActivity(intent);
             finish();
         } else binding.setIsLoading(false);
     }

@@ -1,7 +1,6 @@
 package com.david0926.selfcheck;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,11 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.david0926.selfcheck.databinding.ActivityCheckBinding;
+import com.david0926.selfcheck.model.SettingModel;
 import com.david0926.selfcheck.util.SharedPreferenceUtil;
 
 public class CheckActivity extends AppCompatActivity {
 
     private ActivityCheckBinding binding;
+
+    private SettingModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class CheckActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check);
         binding.setIsSuccess(false);
         binding.setIsFailed(false);
+
+        model = (SettingModel) getIntent().getSerializableExtra("setting");
 
         setSupportActionBar(binding.toolbarCheck);
         getSupportActionBar().setTitle("");
@@ -54,7 +58,7 @@ public class CheckActivity extends AppCompatActivity {
                         clickElementById("btnConfirm");
                         break;
                     case "https://hcs.eduro.go.kr/#/main":
-                        if(binding.getIsSuccess()) finishSetup();
+                        if (binding.getIsSuccess()) finishSetup();
                         else clickFirstElementByClassName("btn");
                         break;
                     case "https://hcs.eduro.go.kr/#/survey":
@@ -67,7 +71,7 @@ public class CheckActivity extends AppCompatActivity {
         binding.webView.loadUrl("https://hcs.eduro.go.kr");
     }
 
-    private void finishSetup(){
+    private void finishSetup() {
         SharedPreferenceUtil.putBoolean(CheckActivity.this, "is_first", false);
         Toast.makeText(CheckActivity.this,
                 R.string.first_setup_finish_toast, Toast.LENGTH_LONG).show();
@@ -76,13 +80,14 @@ public class CheckActivity extends AppCompatActivity {
 
     private void doSurvey() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= model.getQuestionCount(); i++)
                 clickElementByQuerySelector("[for=\"survey_q" + i + "a1\"]");
             clickElementById("btnConfirm");
-            if(!binding.getIsSuccess()){
+            if (!binding.getIsSuccess()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("자가진단 확인").setMessage(R.string.selfcheck_questions);
-                builder.setPositiveButton("확인", (dialogInterface, i) -> {});
+                builder.setTitle("자가진단 확인").setMessage(model.getQuestion().replace("\\n", "\n"));
+                builder.setPositiveButton("확인", (dialogInterface, i) -> {
+                });
                 builder.show();
             }
             binding.setIsSuccess(true);
@@ -147,7 +152,7 @@ public class CheckActivity extends AppCompatActivity {
             builder.show();
         } else if (item.getItemId() == R.id.action_info) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("개발자 정보").setMessage("앱 개발: 선린인터넷고등학교 정찬효\n문의: android-dev@kakao.com");
+            builder.setTitle("개발자 정보").setMessage(model.getInfo().replace("\\n", "\n"));
             builder.setPositiveButton("확인", (dialogInterface, i) -> {
             });
             builder.show();

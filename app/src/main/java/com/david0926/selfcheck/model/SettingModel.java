@@ -10,11 +10,13 @@ public class SettingModel implements Serializable {
     private List<String> rspns;
     private Boolean enable, notice, cancelable, update;
     private Map<String, String> school;
+    private String question, info;
+    private Integer questionCount;
 
     public SettingModel() {
     }
 
-    public SettingModel(String title, String message, String version, String link, List<String> rspns, Boolean enable, Boolean notice, Boolean cancelable, Boolean update, Map<String, String> school) {
+    public SettingModel(String title, String message, String version, String link, List<String> rspns, Boolean enable, Boolean notice, Boolean cancelable, Boolean update, Map<String, String> school, String question, String info, Integer questionCount) {
         this.title = title;
         this.message = message;
         this.version = version;
@@ -25,6 +27,9 @@ public class SettingModel implements Serializable {
         this.cancelable = cancelable;
         this.update = update;
         this.school = school;
+        this.question = question;
+        this.info = info;
+        this.questionCount = questionCount;
     }
 
     public String getTitle() {
@@ -105,5 +110,29 @@ public class SettingModel implements Serializable {
 
     public void setSchool(Map<String, String> school) {
         this.school = school;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public Integer getQuestionCount() {
+        return questionCount;
+    }
+
+    public void setQuestionCount(Integer questionCount) {
+        this.questionCount = questionCount;
     }
 }
