@@ -3,9 +3,10 @@ package com.david0926.selfcheck;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
@@ -59,12 +60,27 @@ public class CheckActivity extends AppCompatActivity {
                         break;
                     case "https://hcs.eduro.go.kr/#/main":
                         if (binding.getIsSuccess()) finishSetup();
-                        else clickFirstElementByClassName("btn");
+                        else new Handler(getMainLooper()).postDelayed(() -> {
+                            clickFirstElementByClassName("btn");
+                        }, 1000);
                         break;
                     case "https://hcs.eduro.go.kr/#/survey":
                         doSurvey();
                         break;
                 }
+            }
+        });
+
+        binding.webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(CheckActivity.this)
+                        .setMessage(message)
+                        .setPositiveButton("확인", (dialog, which) -> finish())
+                        .setOnCancelListener(dialog -> finish())
+                        .show();
+                result.cancel();
+                return true;
             }
         });
 
@@ -79,7 +95,7 @@ public class CheckActivity extends AppCompatActivity {
     }
 
     private void doSurvey() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        new Handler(getMainLooper()).postDelayed(() -> {
             for (int i = 1; i <= model.getQuestionCount(); i++)
                 clickElementByQuerySelector("[for=\"survey_q" + i + "a1\"]");
             clickElementById("btnConfirm");
